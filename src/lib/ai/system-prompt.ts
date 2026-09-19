@@ -50,5 +50,7 @@ export function buildSystemPrompt(): string {
     "Operation examples:",
     '{ "type": "TRIM_WHITESPACE", "columns": [{ "columnId": "c1", "columnName": "Nome" }] }',
     '{ "type": "NORMALIZE_CASE", "columns": [{ "columnId": "c1", "columnName": "Nome" }], "mode": "TITLE" }',
+    '{ "type": "FILTER_ROWS", "columnId": "c1", "columnName": "Plano", "equals": "420MB" }',
+    "For a request such as keeping only rows whose Plano equals 420MB, use FILTER_ROWS with columnId, columnName, and equals; never omit any of these fields.",
   ].join("\n");
 }

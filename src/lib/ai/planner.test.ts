@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { operationPlanSchema } from "@/schemas/ai-plan";
+import { buildSystemPrompt } from "@/lib/ai/system-prompt";
 
 describe("operationPlanSchema", () => {
   it("accepts a valid plan", () => {
@@ -43,6 +44,15 @@ describe("operationPlanSchema", () => {
 });
 
 describe("planner parsePlanContent", () => {
+  it("documents the complete FILTER_ROWS contract", () => {
+    const prompt = buildSystemPrompt();
+
+    expect(prompt).toContain('"type": "FILTER_ROWS"');
+    expect(prompt).toContain('"columnId": "c1"');
+    expect(prompt).toContain('"columnName": "Plano"');
+    expect(prompt).toContain('"equals": "420MB"');
+  });
+
   // parsePlanContent is not exported; validate the schema path indirectly
   // by confirming the schema rejects malformed operation payloads.
   it("rejects a plan with an invalid operation payload", () => {
