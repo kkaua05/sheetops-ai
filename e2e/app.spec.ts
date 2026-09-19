@@ -12,7 +12,7 @@ test.describe("Home page", () => {
   test("renders the hero and CTA", async ({ page }) => {
     await page.goto("/");
 
-    await expect(page.getByRole("heading", { name: "SheetOps AI" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Suas planilhas, finalmente sob controle." })).toBeVisible();
     await expect(page.getByRole("link", { name: "Começar análise" })).toBeVisible();
   });
 
@@ -21,7 +21,7 @@ test.describe("Home page", () => {
     await page.getByRole("link", { name: "Começar análise" }).click();
 
     await expect(page).toHaveURL(/\/workspace$/);
-    await expect(page.getByText("Arraste um arquivo aqui")).toBeVisible();
+    await expect(page.getByText("Arraste sua planilha aqui")).toBeVisible();
   });
 });
 
@@ -100,19 +100,19 @@ test.describe("Workspace", () => {
     await expect(page.getByText("clientes-b.csv")).toBeVisible();
 
     await page.getByRole("button", { name: "Consolidar" }).click();
-    await expect(page.getByText("Consolidar arquivos")).toBeVisible();
-    await expect(page.getByRole("button", { name: "Consolidar datasets" })).toBeEnabled();
-    await page.getByRole("button", { name: "Consolidar datasets" }).click();
+    await expect(page.locator("h1")).toHaveText("Consolidar arquivos");
+    await expect(page.getByRole("button", { name: "Consolidar arquivos" })).toBeEnabled();
+    await page.getByRole("button", { name: "Consolidar arquivos" }).click();
     await expect(page.getByRole("status")).toContainText("criado com");
 
     await page.getByRole("button", { name: "Comparar" }).click();
-    await expect(page.getByText("Comparar datasets")).toBeVisible();
+    await expect(page.locator("h1")).toHaveText("Comparar datasets");
     await expect(page.getByRole("button", { name: "Executar comparação" })).toBeEnabled();
     await page.getByRole("button", { name: "Executar comparação" }).click();
     await expect(page.getByRole("status")).toContainText("Idênticos");
 
     await page.getByRole("button", { name: "Reconciliar" }).click();
-    await expect(page.getByText("Reconciliar valores")).toBeVisible();
+    await expect(page.locator("h1")).toHaveText("Reconciliar valores");
     await expect(page.getByRole("button", { name: "Executar reconciliação" })).toBeEnabled();
     await page.getByRole("button", { name: "Executar reconciliação" }).click();
     await expect(page.getByRole("status")).toContainText("Conciliados");
