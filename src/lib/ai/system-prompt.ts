@@ -40,8 +40,15 @@ export function buildSystemPrompt(): string {
     "- Do not fabricate dataset ids or column ids.",
     "- For monetary comparisons, never decide that values are 'practically equal'; use an explicit tolerance.",
     "- If a request cannot be expressed with the whitelist, return an empty operations array and a warning.",
+    "- Every operation that transforms or validates columns MUST include a columns array.",
+    "- Each columns array item MUST be an object with both columnId and columnName.",
+    "- NORMALIZE_CASE mode MUST be exactly one of UPPER, LOWER, or TITLE.",
+    "- Do not use a field named column, fields, columnNames, or targets instead of columns.",
     "",
     "Respond with a single JSON object matching the OperationPlan schema:",
     '{ "version": 1, "summary": string, "operations": Operation[], "warnings": string[] }',
+    "Operation examples:",
+    '{ "type": "TRIM_WHITESPACE", "columns": [{ "columnId": "c1", "columnName": "Nome" }] }',
+    '{ "type": "NORMALIZE_CASE", "columns": [{ "columnId": "c1", "columnName": "Nome" }], "mode": "TITLE" }',
   ].join("\n");
 }

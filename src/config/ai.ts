@@ -8,7 +8,7 @@
  */
 
 /** Fallback model used when `GROQ_MODEL` is not configured. */
-export const DEFAULT_GROQ_MODEL = "llama-3.3-70b-versatile";
+export const DEFAULT_GROQ_MODEL = "openai/gpt-oss-120b";
 
 /** Timeout (ms) for a single Groq request. */
 export const GROQ_TIMEOUT_MS = 30_000;
