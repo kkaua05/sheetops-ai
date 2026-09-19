@@ -69,7 +69,7 @@ export function FileUpload() {
   };
 
   return (
-    <Card className="w-full max-w-xl">
+    <Card className="w-full max-w-2xl">
       <div
         role="button"
         tabIndex={0}
@@ -88,9 +88,9 @@ export function FileUpload() {
         onDragLeave={() => setIsDragging(false)}
         onDrop={onDrop}
         className={cn(
-          "flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-10 text-center transition-colors",
+          "flex cursor-pointer flex-col items-center justify-center gap-4 rounded-xl border border-dashed p-10 text-center transition-colors sm:p-14",
           isDragging
-            ? "border-primary bg-primary/5"
+            ? "border-primary bg-accent"
             : "border-border hover:border-primary/50 hover:bg-accent/50",
         )}
       >
@@ -114,13 +114,13 @@ export function FileUpload() {
           </>
         ) : (
           <>
-            <div className="flex size-12 items-center justify-center rounded-full bg-primary/10">
+            <div className="flex size-14 items-center justify-center rounded-2xl bg-primary/10">
               <Upload className="size-6 text-primary" aria-hidden="true" />
             </div>
             <div>
-              <p className="font-medium">Arraste um arquivo aqui</p>
+              <p className="text-base font-semibold">Arraste sua planilha aqui</p>
               <p className="mt-1 text-sm text-muted-foreground">
-                ou clique para selecionar (.xlsx ou .csv, até {LIMITS.MAX_FILE_SIZE_MB} MB)
+                XLSX ou CSV · até {LIMITS.MAX_FILE_SIZE_MB} MB
               </p>
             </div>
             <Button type="button" variant="outline" size="sm" className="gap-2">

@@ -61,7 +61,7 @@ export function ExportToolbar({ dataset }: { dataset: Dataset }) {
   );
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="flex flex-wrap items-center gap-2 rounded-xl border border-border/70 bg-card p-2">
       <Button
         type="button"
         variant="outline"

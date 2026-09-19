@@ -1,45 +1,45 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #0a0a0a;
+  --background: #f6f7f4;
+  --foreground: #141714;
   --card: #ffffff;
-  --card-foreground: #0a0a0a;
-  --primary: #4f46e5;
+  --card-foreground: #141714;
+  --primary: #18794e;
   --primary-foreground: #ffffff;
-  --secondary: #f4f4f5;
-  --secondary-foreground: #18181b;
-  --muted: #f4f4f5;
-  --muted-foreground: #71717a;
-  --accent: #f4f4f5;
-  --accent-foreground: #18181b;
-  --destructive: #dc2626;
+  --secondary: #eef1ed;
+  --secondary-foreground: #1d2920;
+  --muted: #f1f4f0;
+  --muted-foreground: #69716b;
+  --accent: #e8f4ec;
+  --accent-foreground: #125b3b;
+  --destructive: #b42318;
   --destructive-foreground: #ffffff;
-  --border: #e4e4e7;
-  --input: #e4e4e7;
-  --ring: #4f46e5;
+  --border: #e5e9e5;
+  --input: #dfe5df;
+  --ring: #18794e;
   --success: #16a34a;
   --warning: #d97706;
 }
 
 .dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
-  --card: #111113;
-  --card-foreground: #ededed;
-  --primary: #6366f1;
+  --background: #141714;
+  --foreground: #f2f5f1;
+  --card: #1b211c;
+  --card-foreground: #f2f5f1;
+  --primary: #55b77d;
   --primary-foreground: #ffffff;
-  --secondary: #1c1c1f;
-  --secondary-foreground: #ededed;
-  --muted: #1c1c1f;
-  --muted-foreground: #a1a1aa;
-  --accent: #1c1c1f;
-  --accent-foreground: #ededed;
-  --destructive: #ef4444;
+  --secondary: #243027;
+  --secondary-foreground: #e4eee6;
+  --muted: #202820;
+  --muted-foreground: #aab6ad;
+  --accent: #203a2a;
+  --accent-foreground: #c5efd4;
+  --destructive: #f97066;
   --destructive-foreground: #ffffff;
-  --border: #27272a;
-  --input: #27272a;
-  --ring: #6366f1;
+  --border: #344036;
+  --input: #3a493c;
+  --ring: #55b77d;
   --success: #22c55e;
   --warning: #f59e0b;
 }
@@ -72,6 +72,42 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+.landing-surface {
+  background: radial-gradient(circle at 75% 18%, rgba(24, 121, 78, 0.12), transparent 32%),
+    linear-gradient(180deg, #fbfcfa 0%, #f6f7f4 68%, #eef4ee 100%);
+}
+
+.dark .landing-surface {
+  background: radial-gradient(circle at 75% 18%, rgba(85, 183, 125, 0.14), transparent 32%),
+    linear-gradient(180deg, #182019 0%, #141714 78%, #111411 100%);
+}
+
+::selection {
+  background: #ccebd7;
+  color: #125b3b;
+}
+
+button,
+a,
+input,
+textarea,
+select {
+  transition: background-color 180ms ease, border-color 180ms ease,
+    color 180ms ease, box-shadow 180ms ease, transform 180ms ease,
+    opacity 180ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }
 
 /* Accessible focus ring for keyboard navigation. */

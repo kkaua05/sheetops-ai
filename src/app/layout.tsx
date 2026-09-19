@@ -14,9 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SheetOps AI",
+  title: "SheetOps AI — Automação inteligente para planilhas",
   description:
-    "Limpe, valide, consolide, compare e reconcilie arquivos XLSX e CSV usando automação segura e IA.",
+    "Limpe, valide, consolide, compare e reconcilie arquivos XLSX e CSV com processamento local e automação segura por IA.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

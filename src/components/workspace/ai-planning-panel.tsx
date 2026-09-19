@@ -25,7 +25,7 @@ import {
   Spinner,
   Textarea,
 } from "@/components/ui/primitives";
-import { AlertCircle, CheckCircle2, Sparkles, Wand2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, Filter, Sparkles, Wand2 } from "lucide-react";
 import { LIMITS } from "@/config/limits";
 
 const OPERATION_LABELS: Record<Operation["type"], string> = {
@@ -119,28 +119,27 @@ export function AiPlanningPanel({ dataset }: { dataset: Dataset }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <Card>
+      <Card className="overflow-hidden">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Sparkles className="size-5 text-primary" aria-hidden="true" />
-            Automação com IA
+            Limpeza inteligente
           </CardTitle>
           <CardDescription>
-            Descreva o que você quer fazer com os dados. A IA gera um plano de
-            operações seguro que você pode revisar antes de aplicar.
+            Descreva em linguagem natural o que deseja corrigir nos dados. A IA cria um plano seguro antes de alterar qualquer coisa.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           <Textarea
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            placeholder="Ex.: remova espaços extras, normalize os telefones e remova linhas duplicadas"
+            placeholder="Ex.: remova linhas duplicadas, normalize telefones e mantenha apenas clientes do plano 420MB."
             rows={4}
             maxLength={LIMITS.MAX_PROMPT_LENGTH}
             aria-label="Instrução para a IA"
           />
           <div className="flex items-center justify-between gap-2">
-            <span className="text-xs text-muted-foreground">
+            <span className="text-xs tabular-nums text-muted-foreground">
               {prompt.length}/{LIMITS.MAX_PROMPT_LENGTH}
             </span>
             <Button
@@ -200,13 +199,14 @@ export function AiPlanningPanel({ dataset }: { dataset: Dataset }) {
               {plan.operations.map((op, i) => (
                 <li
                   key={i}
-                  className="flex items-start gap-2 rounded-md border p-3 text-sm"
+                  className="flex items-start gap-3 rounded-xl border border-border/80 bg-muted/30 p-4 text-sm"
                 >
                   <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-medium text-primary">
                     {i + 1}
                   </span>
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <p className="font-medium">{operationSummary(op)}</p>
+                    {op.type === "FILTER_ROWS" && <p className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground"><Filter className="size-3.5 text-primary" /> {op.columnName} · igual a · {op.equals}</p>}
                     <Badge variant="outline" className="mt-1">
                       {op.type}
                     </Badge>

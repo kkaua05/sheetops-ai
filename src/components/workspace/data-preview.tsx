@@ -61,14 +61,14 @@ export function DataPreview({ dataset }: { dataset: Dataset }) {
     <Card>
       <CardHeader className="flex-row items-start justify-between gap-4 space-y-0">
         <div className="min-w-0">
-          <CardTitle className="truncate">{dataset.name}</CardTitle>
+          <CardTitle className="truncate text-base">{dataset.name}</CardTitle>
           <p className="mt-1 text-sm text-muted-foreground">
             {formatNumber(dataset.rows.length)} linhas · {dataset.columns.length} colunas ·{" "}
             {formatBytes(dataset.metadata.fileSizeBytes)}
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-2">
-          <span className="text-sm text-muted-foreground">Saúde dos dados</span>
+          <span className="hidden text-sm text-muted-foreground sm:inline">Saúde dos dados</span>
           <Badge variant={HEALTH_VARIANTS[health.label]}>
             {health.score}/100 · {HEALTH_LABELS[health.label]}
           </Badge>
@@ -79,7 +79,7 @@ export function DataPreview({ dataset }: { dataset: Dataset }) {
         {/* Column type summary */}
         <div className="flex flex-wrap gap-1.5" aria-label="Tipos de coluna">
           {profile.columns.map((col) => (
-            <Badge key={col.columnId} variant="outline" className="gap-1">
+            <Badge key={col.columnId} variant="outline" className="gap-1 rounded-lg border-border bg-muted/40 px-2.5 py-1">
               <span className="text-muted-foreground">{col.name}:</span>
               {TYPE_LABELS[col.inferredType] ?? col.inferredType}
             </Badge>
@@ -87,17 +87,17 @@ export function DataPreview({ dataset }: { dataset: Dataset }) {
         </div>
 
         {/* Table */}
-        <div className="overflow-x-auto rounded-md border">
-          <table className="w-full border-collapse text-sm">
+        <div className="overflow-x-auto rounded-xl border border-border/80">
+          <table className="w-full min-w-[680px] border-collapse text-sm">
             <thead>
-              <tr className="bg-muted">
-                <th className="sticky left-0 z-10 bg-muted px-3 py-2 text-left font-medium text-muted-foreground">
+              <tr className="bg-[#f8faf8]">
+                <th className="sticky left-0 z-10 bg-[#f8faf8] px-3 py-3 text-left text-xs font-semibold text-muted-foreground">
                   #
                 </th>
                 {dataset.columns.map((col) => (
                   <th
                     key={col.id}
-                    className="whitespace-nowrap px-3 py-2 text-left font-medium"
+                    className="whitespace-nowrap px-3 py-3 text-left text-xs font-semibold text-muted-foreground"
                   >
                     <span className="block">{col.name}</span>
                     <span className="block text-xs font-normal text-muted-foreground">
@@ -121,13 +121,13 @@ export function DataPreview({ dataset }: { dataset: Dataset }) {
                 visibleRows.map((row, i) => (
                   <tr
                     key={start + i}
-                    className={cn("border-t", i % 2 === 1 && "bg-muted/30")}
+                    className={cn("border-t border-border/70 hover:bg-accent/40", i % 2 === 1 && "bg-muted/20")}
                   >
-                    <td className="sticky left-0 z-10 bg-background px-3 py-1.5 text-muted-foreground">
+                    <td className="sticky left-0 z-10 bg-card px-3 py-3 text-xs text-muted-foreground">
                       {start + i + 1}
                     </td>
                     {dataset.columns.map((col) => (
-                      <td key={col.id} className="whitespace-nowrap px-3 py-1.5">
+                      <td key={col.id} className="max-w-[240px] truncate whitespace-nowrap px-3 py-3">
                         {formatCell(row[col.id])}
                       </td>
                     ))}
