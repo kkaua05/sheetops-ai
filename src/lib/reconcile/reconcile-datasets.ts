@@ -19,8 +19,17 @@ export interface ReconcileOptions {
 }
 
 /** Build a stable key for a row from the configured key columns. */
-function buildKey(row: DataRow, keyColumns: string[]): string {
-  return keyColumns.map((columnId) => cellToKey(row[columnId])).join("\u0000");
+function resolveColumnId(dataset: Dataset, columnRef: string): string {
+  if (dataset.columns.some((column) => column.id === columnRef)) return columnRef;
+  return dataset.columns.find(
+    (column) => column.name.trim().toLowerCase() === columnRef.trim().toLowerCase(),
+  )?.id ?? columnRef;
+}
+
+function buildKey(dataset: Dataset, row: DataRow, keyColumns: string[]): string {
+  return keyColumns
+    .map((columnId) => cellToKey(row[resolveColumnId(dataset, columnId)]))
+    .join("\u0000");
 }
 
 /**
@@ -28,9 +37,9 @@ function buildKey(row: DataRow, keyColumns: string[]): string {
  * monetary. The reconciliation result stores values in cents (integers) so
  * that money is never represented as a float.
  */
-function extractCents(row: DataRow, columnId?: string): number | null {
+function extractCents(dataset: Dataset, row: DataRow, columnId?: string): number | null {
   if (!columnId) return null;
-  return toCents(row[columnId]);
+  return toCents(row[resolveColumnId(dataset, columnId)]);
 }
 
 /**
@@ -47,13 +56,13 @@ export function reconcileDatasets(
   const indexB = new Map<string, DataRow[]>();
 
   for (const row of datasetA.rows) {
-    const key = buildKey(row, keyColumns);
+    const key = buildKey(datasetA, row, keyColumns);
     const bucket = indexA.get(key) ?? [];
     bucket.push(row);
     indexA.set(key, bucket);
   }
   for (const row of datasetB.rows) {
-    const key = buildKey(row, keyColumns);
+    const key = buildKey(datasetB, row, keyColumns);
     const bucket = indexB.get(key) ?? [];
     bucket.push(row);
     indexB.set(key, bucket);
@@ -76,14 +85,14 @@ export function reconcileDatasets(
     if (rowsA.length === 0) {
       onlyInB += rowsB.length;
       for (const row of rowsB) {
-        rows.push({ key, status: "only_in_b", valueB: extractCents(row, valueColumnB) ?? undefined });
+        rows.push({ key, status: "only_in_b", valueB: extractCents(datasetB, row, valueColumnB) ?? undefined });
       }
       continue;
     }
     if (rowsB.length === 0) {
       onlyInA += rowsA.length;
       for (const row of rowsA) {
-        rows.push({ key, status: "only_in_a", valueA: extractCents(row, valueColumnA) ?? undefined });
+        rows.push({ key, status: "only_in_a", valueA: extractCents(datasetA, row, valueColumnA) ?? undefined });
       }
       continue;
     }
@@ -91,10 +100,10 @@ export function reconcileDatasets(
     // Duplicate keys on both sides are ambiguous.
     if (rowsA.length > 1 || rowsB.length > 1) {
       for (const row of rowsA) {
-        rows.push({ key, status: "only_in_a", valueA: extractCents(row, valueColumnA) ?? undefined });
+        rows.push({ key, status: "only_in_a", valueA: extractCents(datasetA, row, valueColumnA) ?? undefined });
       }
       for (const row of rowsB) {
-        rows.push({ key, status: "only_in_b", valueB: extractCents(row, valueColumnB) ?? undefined });
+        rows.push({ key, status: "only_in_b", valueB: extractCents(datasetB, row, valueColumnB) ?? undefined });
       }
       onlyInA += rowsA.length;
       onlyInB += rowsB.length;
@@ -103,8 +112,8 @@ export function reconcileDatasets(
 
     const a = rowsA[0];
     const b = rowsB[0];
-    const centsA = extractCents(a, valueColumnA);
-    const centsB = extractCents(b, valueColumnB);
+    const centsA = extractCents(datasetA, a, valueColumnA);
+    const centsB = extractCents(datasetB, b, valueColumnB);
 
     if (centsA === null || centsB === null) {
       // Non-monetary values: treat as matched if equal, else difference.

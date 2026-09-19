@@ -22,13 +22,19 @@ export interface CompareOptions {
 
 /** Build a stable key for a row from the configured key columns. */
 function buildKey(
+  dataset: Dataset,
   row: DataRow,
   keyColumns: string[],
   normalize?: CompareDatasetsOperation["normalize"],
 ): string {
   return keyColumns
     .map((columnId) => {
-      const value = row[columnId];
+      const resolvedColumnId = dataset.columns.some((column) => column.id === columnId)
+        ? columnId
+        : dataset.columns.find(
+            (column) => column.name.trim().toLowerCase() === columnId.trim().toLowerCase(),
+          )?.id ?? columnId;
+      const value = row[resolvedColumnId];
       let text = cellToKey(value);
       if (normalize?.trim) text = text.trim();
       if (normalize?.caseInsensitive) text = text.toLowerCase();
@@ -72,13 +78,13 @@ export function compareDatasets(
   const indexB = new Map<string, DataRow[]>();
 
   for (const row of datasetA.rows) {
-    const key = buildKey(row, keyColumns, normalize);
+    const key = buildKey(datasetA, row, keyColumns, normalize);
     const bucket = indexA.get(key) ?? [];
     bucket.push(row);
     indexA.set(key, bucket);
   }
   for (const row of datasetB.rows) {
-    const key = buildKey(row, keyColumns, normalize);
+    const key = buildKey(datasetB, row, keyColumns, normalize);
     const bucket = indexB.get(key) ?? [];
     bucket.push(row);
     indexB.set(key, bucket);
@@ -115,13 +121,15 @@ export function compareDatasets(
     const a = rowsA[0];
     const b = rowsB[0];
     const allColumns = new Set([
-      ...datasetA.columns.map((c) => c.id),
-      ...datasetB.columns.map((c) => c.id),
+      ...datasetA.columns.map((column) => column.name),
+      ...datasetB.columns.map((column) => column.name),
     ]);
 
     let isChanged = false;
     for (const columnId of allColumns) {
-      if (!valuesEqual(a[columnId], b[columnId], normalize)) {
+      const columnA = datasetA.columns.find((column) => column.name === columnId)?.id ?? columnId;
+      const columnB = datasetB.columns.find((column) => column.name === columnId)?.id ?? columnId;
+      if (!valuesEqual(a[columnA], b[columnB], normalize)) {
         isChanged = true;
         break;
       }

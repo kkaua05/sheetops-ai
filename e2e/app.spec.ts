@@ -77,4 +77,44 @@ test.describe("Workspace", () => {
     // The dataset name should appear once parsing completes.
     await expect(page.getByText("contatos.csv")).toBeVisible();
   });
+
+  test("enables merge, compare, and reconcile after importing two CSV files", async ({ page }) => {
+    await page.goto("/workspace");
+
+    const input = page.locator('input[type="file"]');
+    const firstCsv = "cliente,plano,total\nAna,220MB,100,00\n";
+    const secondCsv = "cliente,plano,total\nAna,420MB,100,00\n";
+
+    await input.setInputFiles({
+      name: "clientes-a.csv",
+      mimeType: "text/csv",
+      buffer: Buffer.from(firstCsv),
+    });
+    await expect(page.getByText("clientes-a.csv")).toBeVisible();
+
+    await input.setInputFiles({
+      name: "clientes-b.csv",
+      mimeType: "text/csv",
+      buffer: Buffer.from(secondCsv),
+    });
+    await expect(page.getByText("clientes-b.csv")).toBeVisible();
+
+    await page.getByRole("button", { name: "Consolidar" }).click();
+    await expect(page.getByText("Consolidar arquivos")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Consolidar datasets" })).toBeEnabled();
+    await page.getByRole("button", { name: "Consolidar datasets" }).click();
+    await expect(page.getByRole("status")).toContainText("criado com");
+
+    await page.getByRole("button", { name: "Comparar" }).click();
+    await expect(page.getByText("Comparar datasets")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Executar comparação" })).toBeEnabled();
+    await page.getByRole("button", { name: "Executar comparação" }).click();
+    await expect(page.getByRole("status")).toContainText("Idênticos");
+
+    await page.getByRole("button", { name: "Reconciliar" }).click();
+    await expect(page.getByText("Reconciliar valores")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Executar reconciliação" })).toBeEnabled();
+    await page.getByRole("button", { name: "Executar reconciliação" }).click();
+    await expect(page.getByRole("status")).toContainText("Conciliados");
+  });
 });

@@ -47,4 +47,21 @@ describe("compareDatasets", () => {
     const result = compareDatasets(a, b, { keyColumns: ["c_id"] });
     expect(result.changed).toBe(1);
   });
+
+  it("matches columns by header when imported files have different ids", () => {
+    const a = makeDataset(
+      [{ id: "a_key", name: "Cliente" }, { id: "a_value", name: "Plano" }],
+      [{ a_key: "1", a_value: "220MB" }],
+    );
+    const b = makeDataset(
+      [{ id: "b_key", name: "Cliente" }, { id: "b_value", name: "Plano" }],
+      [{ b_key: "1", b_value: "420MB" }],
+    );
+
+    const result = compareDatasets(a, b, { keyColumns: ["Cliente"] });
+
+    expect(result.changed).toBe(1);
+    expect(result.onlyInA).toBe(0);
+    expect(result.onlyInB).toBe(0);
+  });
 });

@@ -45,4 +45,25 @@ describe("reconcileDatasets", () => {
     expect(result.outsideTolerance).toBe(1);
     expect(result.totalDifferenceCents).toBe(10000);
   });
+
+  it("matches key and value headers when column ids differ", () => {
+    const a = makeDataset(
+      [{ id: "a_key", name: "Cliente" }, { id: "a_value", name: "Total" }],
+      [{ a_key: "1", a_value: "100,00" }],
+    );
+    const b = makeDataset(
+      [{ id: "b_key", name: "Cliente" }, { id: "b_value", name: "Total" }],
+      [{ b_key: "1", b_value: "100,00" }],
+    );
+
+    const result = reconcileDatasets(a, b, {
+      keyColumns: ["Cliente"],
+      valueColumnA: "Total",
+      valueColumnB: "Total",
+      toleranceCents: 0,
+    });
+
+    expect(result.matched).toBe(1);
+    expect(result.outsideTolerance).toBe(0);
+  });
 });

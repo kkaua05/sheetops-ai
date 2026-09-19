@@ -26,6 +26,7 @@ import { DataPreview } from "@/components/workspace/data-preview";
 import { AiPlanningPanel } from "@/components/workspace/ai-planning-panel";
 import { ExportToolbar } from "@/components/workspace/export-toolbar";
 import { ChangesPreview } from "@/components/workspace/changes-preview";
+import { MultiDatasetTools } from "@/components/workspace/multi-dataset-tools";
 
 type ModuleId = "overview" | "clean" | "merge" | "compare" | "reconcile" | "ai";
 
@@ -111,9 +112,9 @@ function WorkspaceShell() {
         {activeModule === "ai" && (
           <AiModule dataset={activeDataset} />
         )}
-        {(activeModule === "merge" || activeModule === "compare" || activeModule === "reconcile") && (
-          <PlaceholderModule label={MODULES.find((m) => m.id === activeModule)?.label ?? ""} />
-        )}
+        {activeModule === "merge" && <MultiDatasetTools mode="merge" />}
+        {activeModule === "compare" && <MultiDatasetTools mode="compare" />}
+        {activeModule === "reconcile" && <MultiDatasetTools mode="reconcile" />}
       </main>
     </div>
   );
@@ -130,6 +131,7 @@ function OverviewModule({ dataset }: { dataset?: import("@/types/dataset").Datas
   }
   return (
     <div className="flex flex-col gap-4">
+      <FileUpload />
       <ExportToolbar dataset={dataset} />
       {lastResult && <ChangesPreview result={lastResult} />}
       <DataPreview dataset={dataset} />
@@ -163,17 +165,6 @@ function AiModule({ dataset }: { dataset?: import("@/types/dataset").Dataset }) 
   return (
     <div className="flex flex-col gap-4">
       <AiPlanningPanel dataset={dataset} />
-    </div>
-  );
-}
-
-function PlaceholderModule({ label }: { label: string }) {
-  return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center">
-      <p className="text-lg font-medium">{label}</p>
-      <p className="max-w-sm text-sm text-muted-foreground">
-        Este módulo estará disponível em breve. Importe arquivos para começar.
-      </p>
     </div>
   );
 }
