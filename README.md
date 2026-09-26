@@ -59,7 +59,7 @@ O SheetOps AI foi construído com os seguintes princípios:
 
 - Solicitações em linguagem natural convertidas em planos estruturados pelo Groq.
 - Planos validados com Zod antes de entrarem no fluxo do cliente.
-- Contexto enviado à IA reduzido a metadados e amostras sanitizadas.
+- Contexto enviado à IA reduzido a metadados e estatísticas agregadas (nenhum valor de célula é transmitido).
 - Ferramentas manuais continuam disponíveis sem uma chave do Groq configurada.
 
 ### Exportação segura
@@ -175,7 +175,7 @@ npm run test:e2e
 
 Estado atual validado:
 
-- **107 testes unitários aprovados** em 17 arquivos.
+- **110 testes unitários aprovados** em 17 arquivos.
 - **6 testes E2E aprovados** com Playwright.
 - Build de produção verificado com Next.js 16.3.5.
 - TypeScript strict e ESLint aprovados.
@@ -184,7 +184,7 @@ Estado atual validado:
 
 - Arquivos de origem são lidos no navegador e não são persistidos pela aplicação.
 - Somente a solicitação de planejamento por IA atravessa a fronteira do servidor.
-- O contexto da IA é reduzido a metadados e amostras sanitizadas.
+- O contexto da IA é reduzido a metadados e estatísticas agregadas (nenhum valor de célula é transmitido).
 - A chave do Groq é acessada apenas por código server-side.
 - Planos de operações são validados por schema antes da execução.
 - Valores exportados para CSV são protegidos contra injeção de fórmulas.
