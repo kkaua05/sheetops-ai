@@ -19,7 +19,6 @@ import {
   Layers,
   LockKeyhole,
   Moon,
-  Sparkles,
   Sun,
   Table2,
   Wand2,
@@ -35,15 +34,14 @@ import { calculateDataHealth } from "@/lib/quality/calculate-data-health";
 import { formatNumber } from "@/lib/utils";
 import { useTheme } from "@/components/theme/theme-provider";
 
-type ModuleId = "overview" | "clean" | "merge" | "compare" | "reconcile" | "ai";
+type ModuleId = "overview" | "clean" | "merge" | "compare" | "reconcile";
 
 const MODULES: Array<{ id: ModuleId; label: string; icon: React.ComponentType<{ className?: string }> }> = [
   { id: "overview", label: "Visão geral", icon: Table2 },
-  { id: "clean", label: "Limpeza", icon: Wand2 },
+  { id: "clean", label: "Limpeza com IA", icon: Wand2 },
   { id: "merge", label: "Consolidar", icon: Layers },
   { id: "compare", label: "Comparar", icon: GitCompareArrows },
   { id: "reconcile", label: "Reconciliar", icon: BarChart3 },
-  { id: "ai", label: "Automações IA", icon: Sparkles },
 ];
 
 function WorkspaceShell() {
@@ -134,9 +132,6 @@ function WorkspaceShell() {
         {activeModule === "clean" && (
           <CleanModule dataset={activeDataset} />
         )}
-        {activeModule === "ai" && (
-          <AiModule dataset={activeDataset} />
-        )}
         {activeModule === "merge" && <MultiDatasetTools mode="merge" />}
         {activeModule === "compare" && <MultiDatasetTools mode="compare" />}
         {activeModule === "reconcile" && <MultiDatasetTools mode="reconcile" />}
@@ -186,23 +181,6 @@ function CleanModule({ dataset }: { dataset?: import("@/types/dataset").Dataset 
   return (
     <div className="flex flex-col gap-7">
       <PageHeader title="Limpeza inteligente" description="Descreva em linguagem natural o que deseja corrigir nos dados." />
-      <AiPlanningPanel dataset={dataset} />
-    </div>
-  );
-}
-
-function AiModule({ dataset }: { dataset?: import("@/types/dataset").Dataset }) {
-  if (!dataset) {
-    return (
-      <div className="flex flex-col gap-7">
-        <PageHeader title="Automações IA" description="Automatize transformações utilizando linguagem natural." />
-        <FileUpload />
-      </div>
-    );
-  }
-  return (
-    <div className="flex flex-col gap-7">
-      <PageHeader title="Automações IA" description="Automatize transformações utilizando linguagem natural." />
       <AiPlanningPanel dataset={dataset} />
     </div>
   );

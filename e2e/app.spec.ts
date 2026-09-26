@@ -30,21 +30,21 @@ test.describe("Workspace", () => {
     await page.goto("/workspace");
 
     await expect(page.getByRole("navigation", { name: "Módulos" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Limpeza" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Automações IA" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Limpeza com IA" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Consolidar" })).toBeVisible();
   });
 
   test("switches modules via the sidebar", async ({ page }) => {
     await page.goto("/workspace");
 
-    await page.getByRole("button", { name: "Limpeza" }).click();
-    await expect(page.getByRole("button", { name: "Limpeza" })).toHaveAttribute(
+    await page.getByRole("button", { name: "Limpeza com IA" }).click();
+    await expect(page.getByRole("button", { name: "Limpeza com IA" })).toHaveAttribute(
       "aria-current",
       "page",
     );
 
-    await page.getByRole("button", { name: "Automações IA" }).click();
-    await expect(page.getByRole("button", { name: "Automações IA" })).toHaveAttribute(
+    await page.getByRole("button", { name: "Consolidar" }).click();
+    await expect(page.getByRole("button", { name: "Consolidar" })).toHaveAttribute(
       "aria-current",
       "page",
     );
