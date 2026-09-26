@@ -5,7 +5,9 @@
  *
  * - Respects the system preference on first load.
  * - Persists the user's explicit choice in localStorage.
- * - Applies the class before hydration to avoid a flash/hydration mismatch.
+ * - The initial class is set synchronously by an inline script in the root
+ *   layout (`THEME_INIT_SCRIPT`, before React hydrates) to avoid a flash of
+ *   the wrong theme; this provider only takes over for subsequent toggles.
  */
 
 import * as React from "react";
@@ -18,6 +20,13 @@ interface ThemeContextValue {
 }
 
 const ThemeContext = React.createContext<ThemeContextValue | null>(null);
+
+/**
+ * Inline script injected into <head> to set the `dark` class before the
+ * first paint, preventing a flash of the wrong theme. Must stay in sync
+ * with `getInitialTheme` below.
+ */
+export const THEME_INIT_SCRIPT = `(function(){try{var s=localStorage.getItem("sheetops-theme");var d=s?s==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;document.documentElement.classList.toggle("dark",d);}catch(e){}})();`;
 
 function getInitialTheme(): Theme {
   if (typeof window === "undefined") return "light";
