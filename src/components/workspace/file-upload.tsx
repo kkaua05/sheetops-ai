@@ -4,13 +4,16 @@
  * FileUpload — accessible drag-and-drop + click-to-browse file importer.
  *
  * Parses files client-side via useFileParser and registers the resulting
- * dataset in the workspace. Shows loading and error states inline.
+ * dataset in the workspace. Shows loading and error states inline, and
+ * exposes an imperative `open()` handle so the workspace header's
+ * "Importar arquivo" button can trigger the same file picker.
  */
 
 import * as React from "react";
 import { useWorkspace } from "@/components/workspace/workspace-context";
 import { useFileParser, type FileError } from "@/components/workspace/use-file-parser";
 import { Button, Card, Spinner } from "@/components/ui/primitives";
+import { useToast } from "@/components/ui/toast";
 import { AlertCircle, FileSpreadsheet, Upload } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { LIMITS } from "@/config/limits";
@@ -32,13 +35,25 @@ const STATUS_LABELS: Record<string, string> = {
   parsing: "Analisando estrutura...",
 };
 
-export function FileUpload() {
+export interface FileUploadHandle {
+  open: () => void;
+}
+
+export const FileUpload = React.forwardRef<FileUploadHandle>(function FileUpload(_props, ref) {
   const { addDataset } = useWorkspace();
+  const { toast } = useToast();
   const { status, error, parseFile, reset } = useFileParser();
   const [isDragging, setIsDragging] = React.useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   const busy = status === "reading" || status === "parsing";
+
+  const onBrowse = React.useCallback(() => {
+    reset();
+    inputRef.current?.click();
+  }, [reset]);
+
+  React.useImperativeHandle(ref, () => ({ open: onBrowse }), [onBrowse]);
 
   const handleFiles = React.useCallback(
     async (files: FileList | File[]) => {
@@ -47,10 +62,26 @@ export function FileUpload() {
       const dataset = await parseFile(file);
       if (dataset) {
         addDataset(dataset);
+        toast({
+          variant: "success",
+          title: "Arquivo importado com sucesso.",
+          description: `${dataset.name} · ${dataset.rows.length.toLocaleString("pt-BR")} linhas`,
+        });
       }
     },
-    [parseFile, addDataset],
+    [parseFile, addDataset, toast],
   );
+
+  React.useEffect(() => {
+    if (error) {
+      toast({
+        variant: "error",
+        title: "Não foi possível importar o arquivo.",
+        description: ERROR_MESSAGES[error.code] ?? error.message,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [error]);
 
   const onDrop = React.useCallback(
     (event: React.DragEvent) => {
@@ -62,11 +93,6 @@ export function FileUpload() {
     },
     [handleFiles],
   );
-
-  const onBrowse = () => {
-    reset();
-    inputRef.current?.click();
-  };
 
   return (
     <Card className="w-full max-w-2xl">
@@ -88,10 +114,10 @@ export function FileUpload() {
         onDragLeave={() => setIsDragging(false)}
         onDrop={onDrop}
         className={cn(
-          "flex cursor-pointer flex-col items-center justify-center gap-4 rounded-xl border border-dashed p-10 text-center transition-colors sm:p-14",
+          "flex cursor-pointer flex-col items-center justify-center gap-4 rounded-lg border border-dashed p-10 text-center transition-colors sm:p-14",
           isDragging
             ? "border-primary bg-accent"
-            : "border-border hover:border-primary/50 hover:bg-accent/50",
+            : "border-border hover:border-border-hover hover:bg-accent/50",
         )}
       >
         <input
@@ -114,7 +140,12 @@ export function FileUpload() {
           </>
         ) : (
           <>
-            <div className="flex size-14 items-center justify-center rounded-2xl bg-primary/10">
+            <div
+              className={cn(
+                "flex size-14 items-center justify-center rounded-xl bg-primary/10 transition-transform duration-300",
+                isDragging && "scale-110",
+              )}
+            >
               <Upload className="size-6 text-primary" aria-hidden="true" />
             </div>
             <div>
@@ -142,4 +173,4 @@ export function FileUpload() {
       )}
     </Card>
   );
-}
+});
