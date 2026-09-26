@@ -12,13 +12,13 @@ test.describe("Home page", () => {
   test("renders the hero and CTA", async ({ page }) => {
     await page.goto("/");
 
-    await expect(page.getByRole("heading", { name: "Suas planilhas, finalmente sob controle." })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Começar análise" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Suas planilhas. Finalmente sob controle." })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Começar análise" }).first()).toBeVisible();
   });
 
   test("navigates to the workspace", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("link", { name: "Começar análise" }).click();
+    await page.getByRole("link", { name: "Começar análise" }).first().click();
 
     await expect(page).toHaveURL(/\/workspace$/);
     await expect(page.getByText("Arraste sua planilha aqui")).toBeVisible();
@@ -60,7 +60,9 @@ test.describe("Workspace", () => {
       buffer: Buffer.from("not a spreadsheet"),
     });
 
-    await expect(page.getByText("Formato não suportado. Use .xlsx ou .csv.")).toBeVisible();
+    await expect(
+      page.getByRole("main").getByText("Formato não suportado. Use .xlsx ou .csv."),
+    ).toBeVisible();
   });
 
   test("imports a CSV file and shows a preview", async ({ page }) => {
@@ -75,7 +77,7 @@ test.describe("Workspace", () => {
     });
 
     // The dataset name should appear once parsing completes.
-    await expect(page.getByText("contatos.csv")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "contatos.csv" })).toBeVisible();
   });
 
   test("enables merge, compare, and reconcile after importing two CSV files", async ({ page }) => {
@@ -90,31 +92,31 @@ test.describe("Workspace", () => {
       mimeType: "text/csv",
       buffer: Buffer.from(firstCsv),
     });
-    await expect(page.getByText("clientes-a.csv")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "clientes-a.csv" })).toBeVisible();
 
     await input.setInputFiles({
       name: "clientes-b.csv",
       mimeType: "text/csv",
       buffer: Buffer.from(secondCsv),
     });
-    await expect(page.getByText("clientes-b.csv")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "clientes-b.csv" })).toBeVisible();
 
     await page.getByRole("button", { name: "Consolidar" }).click();
     await expect(page.locator("h1")).toHaveText("Consolidar arquivos");
     await expect(page.getByRole("button", { name: "Consolidar arquivos" })).toBeEnabled();
     await page.getByRole("button", { name: "Consolidar arquivos" }).click();
-    await expect(page.getByRole("status")).toContainText("criado com");
+    await expect(page.getByRole("main").getByRole("status")).toContainText("criado com");
 
     await page.getByRole("button", { name: "Comparar" }).click();
     await expect(page.locator("h1")).toHaveText("Comparar datasets");
     await expect(page.getByRole("button", { name: "Executar comparação" })).toBeEnabled();
     await page.getByRole("button", { name: "Executar comparação" }).click();
-    await expect(page.getByRole("status")).toContainText("Idênticos");
+    await expect(page.getByRole("main").getByRole("status")).toContainText("Idênticos");
 
     await page.getByRole("button", { name: "Reconciliar" }).click();
     await expect(page.locator("h1")).toHaveText("Reconciliar valores");
     await expect(page.getByRole("button", { name: "Executar reconciliação" })).toBeEnabled();
     await page.getByRole("button", { name: "Executar reconciliação" }).click();
-    await expect(page.getByRole("status")).toContainText("Conciliados");
+    await expect(page.getByRole("main").getByRole("status")).toContainText("Conciliados");
   });
 });
