@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * SheetOps AI — Home page.
  *
