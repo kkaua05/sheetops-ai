@@ -15,16 +15,16 @@ import { cn } from "@/lib/cn";
 /* ------------------------------------------------------------------ */
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[10px] text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98] [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98] [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90",
+          "bg-primary text-primary-foreground shadow-[0_1px_0_rgba(255,255,255,0.16)_inset] hover:bg-primary-light",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         outline:
-          "border border-input bg-card hover:bg-accent hover:text-accent-foreground",
+          "border border-input bg-card hover:border-border-hover hover:bg-accent hover:text-accent-foreground",
         ghost: "hover:bg-muted hover:text-foreground",
         destructive:
           "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
@@ -32,8 +32,8 @@ const buttonVariants = cva(
       },
       size: {
         default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-[9px] px-3 text-xs",
-        lg: "h-11 rounded-[10px] px-8",
+        sm: "h-9 rounded-md px-3 text-xs",
+        lg: "h-12 rounded-lg px-8 text-[15px]",
         icon: "h-10 w-10",
       },
     },
@@ -71,7 +71,7 @@ export const Card = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "rounded-2xl border bg-card text-card-foreground shadow-[0_8px_30px_rgba(35,55,40,0.04)]",
+      "rounded-xl border border-border bg-card text-card-foreground shadow-[0_1px_0_rgba(0,0,0,0.02),0_8px_24px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_0_rgba(255,255,255,0.03),0_12px_32px_rgba(0,0,0,0.35)]",
       className,
     )}
     {...props}
@@ -244,5 +244,145 @@ export function Spinner({ className }: { className?: string }) {
         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
       />
     </svg>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Skeleton                                                            */
+/* ------------------------------------------------------------------ */
+
+export function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cn("skeleton rounded-md", className)}
+      aria-hidden="true"
+      {...props}
+    />
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Progress                                                            */
+/* ------------------------------------------------------------------ */
+
+export function Progress({
+  value,
+  className,
+  label,
+}: {
+  /** 0-100 */
+  value: number;
+  className?: string;
+  label?: string;
+}) {
+  const clamped = Math.min(100, Math.max(0, value));
+  return (
+    <div
+      role="progressbar"
+      aria-valuenow={clamped}
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-label={label}
+      className={cn("h-1.5 w-full overflow-hidden rounded-full bg-muted", className)}
+    >
+      <div
+        className="h-full rounded-full bg-primary transition-[width] duration-500 ease-out"
+        style={{ width: `${clamped}%` }}
+      />
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* StatCard                                                            */
+/* ------------------------------------------------------------------ */
+
+export function StatCard({
+  label,
+  value,
+  icon: Icon,
+  tone = "text-foreground",
+}: {
+  label: string;
+  value: React.ReactNode;
+  icon?: React.ComponentType<{ className?: string }>;
+  tone?: string;
+}) {
+  return (
+    <Card className="p-4">
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
+        {Icon && (
+          <span className="flex size-7 items-center justify-center rounded-md bg-primary/10 text-primary">
+            <Icon className="size-3.5" aria-hidden="true" />
+          </span>
+        )}
+      </div>
+      <p className={cn("mt-2 text-2xl font-semibold tracking-tight tabular-nums", tone)}>{value}</p>
+    </Card>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* EmptyState                                                          */
+/* ------------------------------------------------------------------ */
+
+export function EmptyState({
+  icon: Icon,
+  title,
+  description,
+  action,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  description: string;
+  action?: React.ReactNode;
+}) {
+  return (
+    <Card className="border-dashed bg-card/60">
+      <CardContent className="flex flex-col items-center justify-center gap-3 py-16 text-center">
+        <span className="flex size-12 items-center justify-center rounded-xl bg-muted text-muted-foreground">
+          <Icon className="size-5" aria-hidden="true" />
+        </span>
+        <div>
+          <p className="font-medium">{title}</p>
+          <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">{description}</p>
+        </div>
+        {action}
+      </CardContent>
+    </Card>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Tooltip                                                             */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Minimal, dependency-free tooltip. Pure CSS (group-hover/focus-visible), so
+ * it costs nothing at runtime and never blocks on JS hydration.
+ */
+export function Tooltip({
+  label,
+  children,
+  side = "bottom",
+}: {
+  label: string;
+  children: React.ReactElement;
+  side?: "top" | "bottom";
+}) {
+  return (
+    <span className="group/tooltip relative inline-flex">
+      {children}
+      <span
+        role="tooltip"
+        className={cn(
+          "pointer-events-none absolute left-1/2 z-50 -translate-x-1/2 whitespace-nowrap rounded-md bg-foreground px-2 py-1 text-xs font-medium text-background opacity-0 transition-opacity delay-150 duration-150 group-hover/tooltip:opacity-100 group-focus-within/tooltip:opacity-100",
+          side === "bottom" ? "top-full mt-2" : "bottom-full mb-2",
+        )}
+      >
+        {label}
+      </span>
+    </span>
   );
 }
