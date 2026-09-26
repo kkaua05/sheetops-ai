@@ -12,7 +12,7 @@ import type { CellChange } from "@/types/results";
 /**
  * Apply column mapping to a dataset.
  */
-export function applyNormalizeText(
+export function applyMapColumns(
   dataset: Dataset,
   operation: MapColumnsOperation,
 ): { dataset: Dataset; changes: CellChange[] } {

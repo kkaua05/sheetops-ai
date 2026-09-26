@@ -18,7 +18,7 @@ import { applyClean } from "./clean";
 import { applyDeduplicate } from "./deduplicate";
 import { applyNormalizePhone } from "./normalize-phone";
 import { applyNormalizeDate } from "./normalize-date";
-import { applyNormalizeText } from "./normalize-text";
+import { applyMapColumns } from "./map-columns";
 import { mergeDatasets, type MergeResult } from "@/lib/merge/merge-datasets";
 import { compareDatasets } from "@/lib/compare/compare-datasets";
 import { reconcileDatasets } from "@/lib/reconcile/reconcile-datasets";
@@ -63,7 +63,7 @@ export function applyOperation(
     case "NORMALIZE_DATE":
       return applyNormalizeDate(dataset, operation);
     case "MAP_COLUMNS":
-      return applyNormalizeText(dataset, operation);
+      return applyMapColumns(dataset, operation);
     case "MERGE_DATASETS":
     case "COMPARE_DATASETS":
     case "RECONCILE_DATASETS":
