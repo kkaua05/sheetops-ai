@@ -66,7 +66,7 @@ function WorkspaceShell() {
   const activeLabel = MODULES.find((module) => module.id === activeModule)?.label ?? "";
 
   return (
-    <div className="flex min-h-0 flex-1 bg-background lg:flex-row">
+    <div className="flex min-h-0 flex-1 flex-col bg-background lg:flex-row">
       {/* Sidebar (desktop) */}
       <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-card lg:flex">
         <div className="flex items-center gap-3 border-b border-border px-5 py-5">
